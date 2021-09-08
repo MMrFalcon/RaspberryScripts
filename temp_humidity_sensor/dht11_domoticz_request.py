@@ -13,6 +13,13 @@ SERVER="192.168.100.202:8080"
 DHTIDX="1"
 DATE_TIME_STRING = str(datetime.datetime.now())
 
+def get_temp_and_humidity():
+       temperature_c = DHT_DEVICE.temperature
+       temperature_f = temperature_c * (9 / 5) + 32
+       humidity = DHT_DEVICE.humidity
+       print(DATE_TIME_STRING + " : " + "Temp: {:.1f} F / {:.1f} C Humidity: {}% ".format(temperature_f, temperature_c, humidity))
+       return dict(temp=temperature_c, hum=humidity)
+
 def send_data_to_server(temperature_c, humidity):
        formated_temperature_c = "{:.1f}".format(temperature_c)
        print(DATE_TIME_STRING + " : ", formated_temperature_c, " - ", humidity)
@@ -28,13 +35,8 @@ def send_data_to_server(temperature_c, humidity):
 # try to get data 20 times
 for x in range(20):
        try:
- 
-              temperature_c = DHT_DEVICE.temperature
-              temperature_f = temperature_c * (9 / 5) + 32
-              humidity = DHT_DEVICE.humidity
-              print(DATE_TIME_STRING + " : " + "Temp: {:.1f} F / {:.1f} C    Humidity: {}% ".format(temperature_f, temperature_c, humidity))
-              
-              send_data_to_server(temperature_c, humidity)
+              data_dict = get_temp_and_humidity()
+              send_data_to_server(data_dict.get("temp"), data_dict.get("hum"))
               break
        except Exception as error:
               # Errors happen fairly often, DHT's are hard to read, just keep going 
